@@ -1,0 +1,29 @@
+<resources>
+  <attr name="maskingType" format="string" />
+  <attr name="visibleChars" format="integer" />
+  <attr name="maskChar" format="string" />
+  <attr name="offsetDays" format="integer" />
+  <attr name="tokenPrefix" format="string" />
+  <attr name="swappedWith" format="string" />
+  <attr name="algorithm" format="string" />
+  <attr name="maskingMode" format="string" />
+
+  <declare-styleable name="MaskingTextView">
+    <attr name="maskingType" />
+    <attr name="visibleChars" />
+    <attr name="maskChar" />
+    <attr name="offsetDays" />
+    <attr name="tokenPrefix" />
+    <attr name="swappedWith" />
+    <attr name="algorithm" />
+  </declare-styleable>
+
+  <declare-styleable name="MaskingEditText">
+    <attr name="maskingType" />
+    <attr name="visibleChars" />
+    <attr name="maskChar" />
+    <attr name="offsetDays" />
+    <attr name="tokenPrefix" />
+    <attr name="maskingMode" />
+  </declare-styleable>
+</resources>

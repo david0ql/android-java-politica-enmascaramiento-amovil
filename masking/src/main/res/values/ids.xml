@@ -1,0 +1,4 @@
+<resources>
+  <item name="masking_original_text" type="id" />
+  <item name="masking_masked_text" type="id" />
+</resources>
