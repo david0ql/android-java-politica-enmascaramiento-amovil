@@ -8,12 +8,15 @@ import co.com.amovil.masking.MaskingEngine;
 import co.com.amovil.masking.MaskingRequest;
 import co.com.amovil.masking.MaskingResult;
 import co.com.amovil.masking.MaskingType;
+import co.com.amovil.masking.MaskingValueType;
 import co.com.amovil.masking.R;
 
 final class MaskingTextConfig {
   private MaskingType maskingType;
   private Integer visibleChars;
   private String maskChar;
+  private MaskingValueType valueType;
+  private String suffix;
   private Integer offsetDays;
   private String tokenPrefix;
   private String swappedWith;
@@ -30,6 +33,9 @@ final class MaskingTextConfig {
         visibleChars = array.getInt(R.styleable.MaskingTextView_visibleChars, 4);
       }
       maskChar = array.getString(R.styleable.MaskingTextView_maskChar);
+      valueType = MaskingValueType.fromValue(
+          array.getString(R.styleable.MaskingTextView_valueType));
+      suffix = array.getString(R.styleable.MaskingTextView_suffix);
       if (array.hasValue(R.styleable.MaskingTextView_offsetDays)) {
         offsetDays = array.getInt(R.styleable.MaskingTextView_offsetDays, -180);
       }
@@ -52,6 +58,12 @@ final class MaskingTextConfig {
     }
     if (maskChar != null) {
       builder.maskChar(maskChar);
+    }
+    if (valueType != null) {
+      builder.valueType(valueType);
+    }
+    if (suffix != null) {
+      builder.suffix(suffix);
     }
     if (offsetDays != null) {
       builder.offsetDays(offsetDays);
@@ -82,6 +94,14 @@ final class MaskingTextConfig {
 
   void setMaskChar(String maskChar) {
     this.maskChar = maskChar;
+  }
+
+  void setValueType(MaskingValueType valueType) {
+    this.valueType = valueType;
+  }
+
+  void setSuffix(String suffix) {
+    this.suffix = suffix;
   }
 
   void setOffsetDays(Integer offsetDays) {

@@ -9,6 +9,7 @@ import co.com.amovil.masking.MaskingEngine;
 import co.com.amovil.masking.MaskingRequest;
 import co.com.amovil.masking.MaskingResult;
 import co.com.amovil.masking.MaskingType;
+import co.com.amovil.masking.MaskingValueType;
 import co.com.amovil.masking.R;
 
 public final class MaskingEditTextController {
@@ -21,6 +22,8 @@ public final class MaskingEditTextController {
   private final MaskingType type;
   private final Integer visibleChars;
   private final String maskChar;
+  private final MaskingValueType valueType;
+  private final String suffix;
   private final Integer offsetDays;
   private final String tokenPrefix;
   private final Mode mode;
@@ -32,6 +35,8 @@ public final class MaskingEditTextController {
     this.type = builder.type;
     this.visibleChars = builder.visibleChars;
     this.maskChar = builder.maskChar;
+    this.valueType = builder.valueType;
+    this.suffix = builder.suffix;
     this.offsetDays = builder.offsetDays;
     this.tokenPrefix = builder.tokenPrefix;
     this.mode = builder.mode;
@@ -84,6 +89,12 @@ public final class MaskingEditTextController {
     if (maskChar != null) {
       builder.maskChar(maskChar);
     }
+    if (valueType != null) {
+      builder.valueType(valueType);
+    }
+    if (suffix != null) {
+      builder.suffix(suffix);
+    }
     if (offsetDays != null) {
       builder.offsetDays(offsetDays);
     }
@@ -104,6 +115,8 @@ public final class MaskingEditTextController {
     private final MaskingType type;
     private Integer visibleChars;
     private String maskChar;
+    private MaskingValueType valueType;
+    private String suffix;
     private Integer offsetDays;
     private String tokenPrefix;
     private Mode mode = Mode.ON_FOCUS_LOST;
@@ -126,6 +139,16 @@ public final class MaskingEditTextController {
 
     public Builder maskChar(String maskChar) {
       this.maskChar = maskChar;
+      return this;
+    }
+
+    public Builder valueType(MaskingValueType valueType) {
+      this.valueType = valueType;
+      return this;
+    }
+
+    public Builder suffix(String suffix) {
+      this.suffix = suffix;
       return this;
     }
 

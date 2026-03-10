@@ -8,6 +8,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 
 import co.com.amovil.masking.MaskingResult;
 import co.com.amovil.masking.MaskingType;
+import co.com.amovil.masking.MaskingValueType;
 import co.com.amovil.masking.R;
 
 public class MaskingEditText extends AppCompatEditText {
@@ -49,6 +50,12 @@ public class MaskingEditText extends AppCompatEditText {
       String maskChar = array.getString(R.styleable.MaskingEditText_maskChar);
       if (maskChar != null) {
         builder.maskChar(maskChar);
+      }
+      builder.valueType(MaskingValueType.fromValue(
+          array.getString(R.styleable.MaskingEditText_valueType)));
+      String suffix = array.getString(R.styleable.MaskingEditText_suffix);
+      if (suffix != null) {
+        builder.suffix(suffix);
       }
       if (array.hasValue(R.styleable.MaskingEditText_offsetDays)) {
         builder.offsetDays(array.getInt(R.styleable.MaskingEditText_offsetDays, -180));
@@ -105,6 +112,14 @@ public class MaskingEditText extends AppCompatEditText {
 
   public void setMaskChar(String maskChar) {
     config.setMaskChar(maskChar);
+  }
+
+  public void setValueType(MaskingValueType valueType) {
+    config.setValueType(valueType);
+  }
+
+  public void setSuffix(String suffix) {
+    config.setSuffix(suffix);
   }
 
   public void setOffsetDays(Integer offsetDays) {

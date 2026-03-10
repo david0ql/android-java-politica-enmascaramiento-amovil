@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class MaskingEngine {
+  private static final String DEFAULT_EMAIL_DOMAIN = "dominio-ficticio.test";
   private static final Map<MaskingType, MaskingStrategy> STRATEGIES;
 
   static {
@@ -49,7 +50,7 @@ public final class MaskingEngine {
     @Override
     public MaskingResult apply(MaskingRequest request) {
       int seed = HashingUtils.hashString(request.getOriginal());
-      String masked = NameGenerator.generateName(seed);
+      String masked = appendSuffix(NameGenerator.generateName(seed), request.getSuffix());
       return new MaskingResult(masked);
     }
   }
@@ -61,7 +62,7 @@ public final class MaskingEngine {
         return new MaskingResult(request.getSwappedWith());
       }
       int seed = HashingUtils.hashString(request.getOriginal()) + 1;
-      String masked = NameGenerator.generateName(seed);
+      String masked = appendSuffix(NameGenerator.generateName(seed), request.getSuffix());
       return new MaskingResult(masked);
     }
   }
@@ -79,14 +80,14 @@ public final class MaskingEngine {
     @Override
     public MaskingResult apply(MaskingRequest request) {
       String original = safeString(request.getOriginal());
+      if (request.getValueType() == MaskingValueType.EMAIL) {
+        return new MaskingResult(maskEmail(original, resolveMaskChar(request.getMaskChar())));
+      }
       int visibleChars = request.getVisibleChars() != null ? request.getVisibleChars() : 4;
       if (visibleChars < 0) {
         visibleChars = 0;
       }
-      String maskChar = request.getMaskChar();
-      if (maskChar == null || maskChar.isEmpty()) {
-        maskChar = "*";
-      }
+      String maskChar = resolveMaskChar(request.getMaskChar());
       if (original.length() <= visibleChars) {
         return new MaskingResult(original);
       }
@@ -135,7 +136,7 @@ public final class MaskingEngine {
     @Override
     public MaskingResult apply(MaskingRequest request) {
       int seed = HashingUtils.hashString(request.getOriginal()) + 2;
-      String masked = NameGenerator.generateName(seed);
+      String masked = appendSuffix(NameGenerator.generateName(seed), request.getSuffix());
       Map<String, String> metadata = new HashMap<>();
       metadata.put("syntheticValue", masked);
       return new MaskingResult(masked, metadata);
@@ -152,5 +153,63 @@ public final class MaskingEngine {
 
   private static String safeString(String value) {
     return value == null ? "" : value;
+  }
+
+  private static String resolveMaskChar(String maskChar) {
+    if (maskChar == null || maskChar.isEmpty()) {
+      return "*";
+    }
+    return maskChar;
+  }
+
+  private static String maskEmail(String original, String maskChar) {
+    EmailParts emailParts = splitEmail(original);
+    if (emailParts == null) {
+      return repeat(maskChar, 4) + "@" + DEFAULT_EMAIL_DOMAIN;
+    }
+    return repeat(maskChar, Math.max(emailParts.localPart.length(), 4)) + "@" + emailParts.domain;
+  }
+
+  private static EmailParts splitEmail(String original) {
+    if (original == null) {
+      return null;
+    }
+    int atIndex = original.indexOf('@');
+    int lastAtIndex = original.lastIndexOf('@');
+    if (atIndex <= 0 || atIndex != lastAtIndex || atIndex == original.length() - 1) {
+      return null;
+    }
+    String localPart = original.substring(0, atIndex).trim();
+    String domain = original.substring(atIndex + 1).trim();
+    if (localPart.isEmpty() || domain.isEmpty() || hasWhitespace(localPart) || hasWhitespace(domain)) {
+      return null;
+    }
+    return new EmailParts(localPart, domain);
+  }
+
+  private static boolean hasWhitespace(String value) {
+    for (int index = 0; index < value.length(); index++) {
+      if (Character.isWhitespace(value.charAt(index))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static String appendSuffix(String value, String suffix) {
+    if (suffix == null || suffix.trim().isEmpty()) {
+      return value;
+    }
+    return value + " " + suffix.trim();
+  }
+
+  private static final class EmailParts {
+    private final String localPart;
+    private final String domain;
+
+    private EmailParts(String localPart, String domain) {
+      this.localPart = localPart;
+      this.domain = domain;
+    }
   }
 }

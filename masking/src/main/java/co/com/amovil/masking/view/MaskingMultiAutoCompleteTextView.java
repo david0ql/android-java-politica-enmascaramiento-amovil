@@ -7,6 +7,7 @@ import androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView;
 
 import co.com.amovil.masking.MaskingResult;
 import co.com.amovil.masking.MaskingType;
+import co.com.amovil.masking.MaskingValueType;
 import co.com.amovil.masking.R;
 
 public class MaskingMultiAutoCompleteTextView extends AppCompatMultiAutoCompleteTextView {
@@ -60,6 +61,14 @@ public class MaskingMultiAutoCompleteTextView extends AppCompatMultiAutoComplete
 
   public void setMaskChar(String maskChar) {
     config.setMaskChar(maskChar);
+  }
+
+  public void setValueType(MaskingValueType valueType) {
+    config.setValueType(valueType);
+  }
+
+  public void setSuffix(String suffix) {
+    config.setSuffix(suffix);
   }
 
   public void setOffsetDays(Integer offsetDays) {

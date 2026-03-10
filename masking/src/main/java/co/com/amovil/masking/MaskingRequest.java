@@ -7,6 +7,8 @@ public final class MaskingRequest {
   private final String algorithm;
   private final Integer visibleChars;
   private final String maskChar;
+  private final MaskingValueType valueType;
+  private final String suffix;
   private final String originalDate;
   private final Integer offsetDays;
   private final String tokenPrefix;
@@ -18,6 +20,8 @@ public final class MaskingRequest {
     this.algorithm = builder.algorithm;
     this.visibleChars = builder.visibleChars;
     this.maskChar = builder.maskChar;
+    this.valueType = builder.valueType;
+    this.suffix = builder.suffix;
     this.originalDate = builder.originalDate;
     this.offsetDays = builder.offsetDays;
     this.tokenPrefix = builder.tokenPrefix;
@@ -47,8 +51,16 @@ public final class MaskingRequest {
     return maskChar;
   }
 
+  public MaskingValueType getValueType() {
+    return valueType != null ? valueType : MaskingValueType.TEXT;
+  }
+
   public String getOriginalDate() {
     return originalDate;
+  }
+
+  public String getSuffix() {
+    return suffix;
   }
 
   public Integer getOffsetDays() {
@@ -70,6 +82,8 @@ public final class MaskingRequest {
     private String algorithm;
     private Integer visibleChars;
     private String maskChar;
+    private MaskingValueType valueType;
+    private String suffix;
     private String originalDate;
     private Integer offsetDays;
     private String tokenPrefix;
@@ -96,6 +110,16 @@ public final class MaskingRequest {
 
     public Builder maskChar(String maskChar) {
       this.maskChar = maskChar;
+      return this;
+    }
+
+    public Builder valueType(MaskingValueType valueType) {
+      this.valueType = valueType;
+      return this;
+    }
+
+    public Builder suffix(String suffix) {
+      this.suffix = suffix;
       return this;
     }
 

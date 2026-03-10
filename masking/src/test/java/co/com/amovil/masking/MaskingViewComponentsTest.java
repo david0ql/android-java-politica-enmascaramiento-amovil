@@ -32,6 +32,16 @@ public class MaskingViewComponentsTest {
   }
 
   @Test
+  public void maskingTextViewMasksEmailKeepingDomain() {
+    MaskingTextView view = new MaskingTextView(getContext());
+    view.setMaskingType(MaskingType.ENMASCARAMIENTO_PARCIAL);
+    view.setMaskChar("*");
+    view.setValueType(MaskingValueType.EMAIL);
+    view.setText("usuario@gmail.com");
+    assertMasked(view, "*******@gmail.com", "usuario@gmail.com");
+  }
+
+  @Test
   public void maskingButtonAppliesConfig() {
     MaskingButton view = new MaskingButton(getContext());
     configurePartialMask(view);

@@ -58,7 +58,8 @@ Ejemplos de VERSION:
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Juan Perez"
-    app:maskingType="sustitucion" />
+    app:maskingType="sustitucion"
+    app:suffix="S.A.S." />
 
 <co.com.amovil.masking.view.MaskingTextView
     android:id="@+id/cedula"
@@ -67,6 +68,15 @@ Ejemplos de VERSION:
     android:text="1023456789"
     app:maskingType="enmascaramiento-parcial"
     app:visibleChars="4"
+    app:maskChar="*" />
+
+<co.com.amovil.masking.view.MaskingTextView
+    android:id="@+id/correo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="usuario@gmail.com"
+    app:maskingType="enmascaramiento-parcial"
+    app:valueType="email"
     app:maskChar="*" />
 
 <co.com.amovil.masking.view.MaskingButton
@@ -114,6 +124,20 @@ Componentes XML disponibles:
 - MaskingMultiAutoCompleteTextView
 - MaskingEditText
 
+Atributos XML relevantes:
+
+| Atributo | Tipo | Aplica a | Descripción |
+|---------|------|----------|-------------|
+| `app:maskingType` | `string` | Todos los componentes | Tipo de enmascaramiento |
+| `app:visibleChars` | `integer` | Enmascaramiento parcial | Cantidad de caracteres visibles al final para texto |
+| `app:maskChar` | `string` | Enmascaramiento parcial | Carácter usado para enmascarar |
+| `app:valueType` | `string` | Enmascaramiento parcial | Usa `text` o `email` |
+| `app:suffix` | `string` | Sustitucion, Permutacion, Datos Sinteticos | Sufijo opcional para empresa, por ejemplo `S.A.` o `S.A.S.` |
+| `app:swappedWith` | `string` | Permutacion | Valor alternativo a usar directamente |
+| `app:offsetDays` | `integer` | Envejecimiento de fechas | Desplazamiento en días |
+| `app:tokenPrefix` | `string` | Tokenizacion | Prefijo del token |
+| `app:maskingMode` | `string` | `MaskingEditText` | Usa `focus_lost` o `text_changed` |
+
 ### 1) Enmascarar un valor (sin UI)
 
 ```java
@@ -125,11 +149,48 @@ MaskingResult result = MaskingEngine.mask(request);
 String masked = result.getMasked();
 ```
 
+Para empresas con sufijo:
+
+```java
+MaskingRequest companyRequest = MaskingRequest.builder(MaskingType.SUSTITUCION, "Acme")
+    .suffix("S.A.S.")
+    .build();
+
+String maskedCompany = MaskingEngine.mask(companyRequest).getMasked();
+// Laura Martinez S.A.S.
+```
+
+Regla:
+
+- `suffix` aplica en `SUSTITUCION`, `PERMUTACION` y `DATOS_SINTETICOS`.
+- En `PERMUTACION`, el sufijo solo se usa cuando no envías `swappedWith`.
+
+Para correo con enmascaramiento parcial:
+
+```java
+MaskingRequest emailRequest = MaskingRequest.builder(
+        MaskingType.ENMASCARAMIENTO_PARCIAL,
+        "usuario@gmail.com")
+    .valueType(MaskingValueType.EMAIL)
+    .maskChar("*")
+    .build();
+
+String maskedEmail = MaskingEngine.mask(emailRequest).getMasked();
+// *******@gmail.com
+```
+
+Regla:
+
+- Si `valueType` es `MaskingValueType.EMAIL`, la librería enmascara la parte antes de `@` y conserva el dominio.
+- Si el correo no tiene un formato válido, el resultado será `****@dominio-ficticio.test`.
+
 ### 2) TextView y componentes derivados (Button, Chip, etc.)
 
 ```java
 TextView textView = findViewById(R.id.nombre);
-MaskingRequest request = MaskingRequest.builder(MaskingType.SUSTITUCION, "Juan Perez").build();
+MaskingRequest request = MaskingRequest.builder(MaskingType.SUSTITUCION, "Juan Perez")
+    .suffix("S.A.")
+    .build();
 MaskingViewApplier.apply(textView, request);
 ```
 
@@ -144,6 +205,19 @@ MaskingEditTextController.attach(editText, MaskingType.ENMASCARAMIENTO_PARCIAL)
     .build();
 
 String original = MaskingEditTextController.getOriginalText(editText);
+```
+
+Si el valor es correo, usa `.valueType(MaskingValueType.EMAIL)` en el builder del controller o `app:valueType="email"` en XML. Cuando el correo no trae dominio válido, la librería retorna `****@dominio-ficticio.test`.
+
+Para nombres de empresa puedes usar `.suffix("S.A.")` o `.suffix("S.A.S.")` en el builder, o `app:suffix="S.A.S."` en XML.
+
+Si necesitas el mismo comportamiento en `MaskingEditTextController`, también puedes hacer:
+
+```java
+MaskingEditTextController.attach(editText, MaskingType.SUSTITUCION)
+    .suffix("S.A.S.")
+    .mode(MaskingEditTextController.Mode.ON_FOCUS_LOST)
+    .build();
 ```
 
 ### 4) Spinner
@@ -175,6 +249,12 @@ listView.setAdapter(adapter);
 5. Envejecimiento de Fechas
 6. Tokenizacion
 7. Datos Sinteticos
+
+Reglas importantes:
+
+- `suffix` está disponible en `SUSTITUCION`, `PERMUTACION` y `DATOS_SINTETICOS`.
+- `valueType` solo aplica a `ENMASCARAMIENTO_PARCIAL`.
+- En `PERMUTACION`, si envías `swappedWith`, ese valor se usa tal cual y no se modifica con `suffix`.
 
 ## Tests
 

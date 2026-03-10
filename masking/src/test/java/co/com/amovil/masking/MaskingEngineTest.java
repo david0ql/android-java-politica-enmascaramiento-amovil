@@ -26,6 +26,30 @@ public class MaskingEngineTest {
   }
 
   @Test
+  public void enmascaramientoParcialMasksEmailKeepingDomain() {
+    MaskingRequest request = MaskingRequest.builder(
+            MaskingType.ENMASCARAMIENTO_PARCIAL,
+            "usuario@gmail.com")
+        .maskChar("*")
+        .valueType(MaskingValueType.EMAIL)
+        .build();
+    MaskingResult result = MaskingEngine.mask(request);
+    assertEquals("*******@gmail.com", result.getMasked());
+  }
+
+  @Test
+  public void enmascaramientoParcialUsesFallbackDomainForInvalidEmail() {
+    MaskingRequest request = MaskingRequest.builder(
+            MaskingType.ENMASCARAMIENTO_PARCIAL,
+            "correo-invalido")
+        .maskChar("*")
+        .valueType(MaskingValueType.EMAIL)
+        .build();
+    MaskingResult result = MaskingEngine.mask(request);
+    assertEquals("****@dominio-ficticio.test", result.getMasked());
+  }
+
+  @Test
   public void envejecimientoFechasShiftsDate() {
     MaskingRequest request = MaskingRequest.builder(MaskingType.ENVEJECIMIENTO_FECHAS, "1990-05-12")
         .originalDate("1990-05-12")
@@ -52,6 +76,15 @@ public class MaskingEngineTest {
     MaskingResult result = MaskingEngine.mask(request);
     assertNotNull(result.getMasked());
     assertNotSame("Juan Perez", result.getMasked());
+  }
+
+  @Test
+  public void sustitucionAppendsSuffixWhenProvided() {
+    MaskingRequest request = MaskingRequest.builder(MaskingType.SUSTITUCION, "Acme")
+        .suffix("S.A.S.")
+        .build();
+    MaskingResult result = MaskingEngine.mask(request);
+    assertTrue(result.getMasked().endsWith(" S.A.S."));
   }
 
   @Test
