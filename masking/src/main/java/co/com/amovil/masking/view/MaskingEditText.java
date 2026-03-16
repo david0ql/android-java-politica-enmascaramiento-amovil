@@ -38,8 +38,11 @@ public class MaskingEditText extends AppCompatEditText {
     }
     TypedArray array = getContext().obtainStyledAttributes(attrs, R.styleable.MaskingEditText);
     try {
-      MaskingType maskingType = MaskingType.fromSlug(
-          array.getString(R.styleable.MaskingEditText_maskingType));
+      if (!array.hasValue(R.styleable.MaskingEditText_maskingType)) {
+        return;
+      }
+      MaskingType maskingType = MaskingType.fromAttrValue(
+          array.getInt(R.styleable.MaskingEditText_maskingType, -1));
       if (maskingType == null) {
         return;
       }
@@ -51,8 +54,10 @@ public class MaskingEditText extends AppCompatEditText {
       if (maskChar != null) {
         builder.maskChar(maskChar);
       }
-      builder.valueType(MaskingValueType.fromValue(
-          array.getString(R.styleable.MaskingEditText_valueType)));
+      if (array.hasValue(R.styleable.MaskingEditText_valueType)) {
+        builder.valueType(MaskingValueType.fromAttrValue(
+            array.getInt(R.styleable.MaskingEditText_valueType, 0)));
+      }
       String suffix = array.getString(R.styleable.MaskingEditText_suffix);
       if (suffix != null) {
         builder.suffix(suffix);
@@ -64,11 +69,11 @@ public class MaskingEditText extends AppCompatEditText {
       if (tokenPrefix != null) {
         builder.tokenPrefix(tokenPrefix);
       }
-      String mode = array.getString(R.styleable.MaskingEditText_maskingMode);
-      if ("text_changed".equalsIgnoreCase(mode)) {
-        builder.mode(MaskingEditTextController.Mode.ON_TEXT_CHANGED);
-      } else if ("focus_lost".equalsIgnoreCase(mode)) {
-        builder.mode(MaskingEditTextController.Mode.ON_FOCUS_LOST);
+      if (array.hasValue(R.styleable.MaskingEditText_maskingMode)) {
+        int modeValue = array.getInt(R.styleable.MaskingEditText_maskingMode, 0);
+        builder.mode(modeValue == 1
+            ? MaskingEditTextController.Mode.ON_TEXT_CHANGED
+            : MaskingEditTextController.Mode.ON_FOCUS_LOST);
       }
       controller = builder.build();
     } finally {

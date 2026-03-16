@@ -28,13 +28,18 @@ final class MaskingTextConfig {
     }
     TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.MaskingTextView);
     try {
-      maskingType = MaskingType.fromSlug(array.getString(R.styleable.MaskingTextView_maskingType));
+      if (array.hasValue(R.styleable.MaskingTextView_maskingType)) {
+        maskingType = MaskingType.fromAttrValue(
+            array.getInt(R.styleable.MaskingTextView_maskingType, -1));
+      }
       if (array.hasValue(R.styleable.MaskingTextView_visibleChars)) {
         visibleChars = array.getInt(R.styleable.MaskingTextView_visibleChars, 4);
       }
       maskChar = array.getString(R.styleable.MaskingTextView_maskChar);
-      valueType = MaskingValueType.fromValue(
-          array.getString(R.styleable.MaskingTextView_valueType));
+      if (array.hasValue(R.styleable.MaskingTextView_valueType)) {
+        valueType = MaskingValueType.fromAttrValue(
+            array.getInt(R.styleable.MaskingTextView_valueType, 0));
+      }
       suffix = array.getString(R.styleable.MaskingTextView_suffix);
       if (array.hasValue(R.styleable.MaskingTextView_offsetDays)) {
         offsetDays = array.getInt(R.styleable.MaskingTextView_offsetDays, -180);

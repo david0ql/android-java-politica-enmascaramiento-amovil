@@ -25,4 +25,8 @@ public enum MaskingValueType {
     }
     return TEXT;
   }
+
+  public static MaskingValueType fromAttrValue(int value) {
+    return value == 1 ? EMAIL : TEXT;
+  }
 }

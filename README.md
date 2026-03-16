@@ -30,7 +30,7 @@ Agrega la dependencia:
 
 ```gradle
 dependencies {
-  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:1.0.1'
+  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:1.0.2'
 }
 ```
 
@@ -38,26 +38,39 @@ Versiones disponibles:
 
 | VERSION | Descripción |
 |---------|-------------|
-| `1.0.1` | Versión estable actual |
+| `1.0.2` | Versión estable actual — `maskingType` con autocompletado en Android Studio |
+| `1.0.1` | Soporte JitPack con Gradle wrapper y maven-publish |
 | `1.0.0` | Primera versión |
-| `main-SNAPSHOT` | Rama principal (puede ser inestable) |
 
 ## Instalación local
-
-Incluye el módulo `masking` en tu proyecto Android:
 
 ```gradle
 // settings.gradle
 include(':masking')
 project(':masking').projectDir = new File('ruta/al/modulo/masking')
-```
 
-```gradle
 // app/build.gradle
 dependencies {
   implementation project(':masking')
 }
 ```
+
+## Tipos de enmascaramiento
+
+Los 7 tipos disponibles, con su valor para XML (`app:maskingType`) y su constante Java (`MaskingType`):
+
+| XML (`app:maskingType`) | Java (`MaskingType`) | Descripción |
+|------------------------|----------------------|-------------|
+| `sustitucion` | `SUSTITUCION` | Reemplaza con nombre sintético colombiano determinístico |
+| `permutacion` | `PERMUTACION` | Intercambia por otro nombre o por el valor de `app:swappedWith` |
+| `cifrado` | `CIFRADO` | Codifica el valor en Base64 |
+| `enmascaramiento_parcial` | `ENMASCARAMIENTO_PARCIAL` | Enmascara dejando N caracteres visibles; modo especial para email |
+| `envejecimiento_fechas` | `ENVEJECIMIENTO_FECHAS` | Desplaza una fecha en días según `app:offsetDays` |
+| `tokenizacion` | `TOKENIZACION` | Genera token con prefijo y hash hexadecimal |
+| `datos_sinteticos` | `DATOS_SINTETICOS` | Genera nombre sintético con semilla diferente a sustitución |
+
+> **Nota:** Los tipos multi-palabra usan guión bajo (`_`) en XML desde la versión `1.0.2`.
+> Todos los enmascaramientos son **determinísticos**: el mismo input siempre produce el mismo output.
 
 ## Componentes XML disponibles
 
@@ -77,22 +90,22 @@ dependencies {
 
 | Atributo | Tipo | Aplica a | Descripción |
 |---------|------|----------|-------------|
-| `app:maskingType` | `string` | Todos | Tipo de enmascaramiento |
-| `app:visibleChars` | `integer` | Enmascaramiento parcial | Caracteres visibles al final |
-| `app:maskChar` | `string` | Enmascaramiento parcial | Carácter de máscara |
-| `app:valueType` | `string` | Enmascaramiento parcial | `text` o `email` |
-| `app:suffix` | `string` | Sustitución, Permutación, Datos Sintéticos | Sufijo de empresa (ej. `S.A.S.`) |
-| `app:swappedWith` | `string` | Permutación | Valor alternativo directo |
-| `app:offsetDays` | `integer` | Envejecimiento de fechas | Desplazamiento en días |
-| `app:tokenPrefix` | `string` | Tokenización | Prefijo del token |
-| `app:maskingMode` | `string` | `MaskingEditText` | `focus_lost` o `text_changed` |
+| `app:maskingType` | enum | Todos | Tipo de enmascaramiento (con autocompletado) |
+| `app:visibleChars` | integer | `enmascaramiento_parcial` | Caracteres visibles al final |
+| `app:maskChar` | string | `enmascaramiento_parcial` | Carácter de máscara (ej. `*`) |
+| `app:valueType` | enum | `enmascaramiento_parcial` | `text` o `email` |
+| `app:suffix` | string | `sustitucion`, `permutacion`, `datos_sinteticos` | Sufijo de empresa (ej. `S.A.S.`) |
+| `app:swappedWith` | string | `permutacion` | Valor alternativo directo |
+| `app:offsetDays` | integer | `envejecimiento_fechas` | Desplazamiento en días (ej. `-180`) |
+| `app:tokenPrefix` | string | `tokenizacion` | Prefijo del token (ej. `TKN`) |
+| `app:maskingMode` | enum | `MaskingEditText` | `focus_lost` o `text_changed` |
 
 ## Uso básico
 
 ### 0) Componentes XML
 
 ```xml
-<!-- Sustitución con sufijo -->
+<!-- Sustitución con sufijo de empresa -->
 <co.com.amovil.masking.view.MaskingTextView
     android:id="@+id/nombre"
     android:layout_width="wrap_content"
@@ -107,7 +120,7 @@ dependencies {
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="1023456789"
-    app:maskingType="enmascaramiento-parcial"
+    app:maskingType="enmascaramiento_parcial"
     app:visibleChars="4"
     app:maskChar="*" />
 
@@ -117,7 +130,7 @@ dependencies {
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="usuario@gmail.com"
-    app:maskingType="enmascaramiento-parcial"
+    app:maskingType="enmascaramiento_parcial"
     app:valueType="email"
     app:maskChar="*" />
 
@@ -136,7 +149,7 @@ dependencies {
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Maria Lopez"
-    app:maskingType="datos-sinteticos" />
+    app:maskingType="datos_sinteticos" />
 
 <!-- Permutación en AutoComplete -->
 <co.com.amovil.masking.view.MaskingAutoCompleteTextView
@@ -153,9 +166,17 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:hint="1990-05-12"
-    app:maskingType="envejecimiento-fechas"
+    app:maskingType="envejecimiento_fechas"
     app:offsetDays="-180"
     app:maskingMode="focus_lost" />
+
+<!-- Cifrado Base64 en RadioButton -->
+<co.com.amovil.masking.view.MaskingRadioButton
+    android:id="@+id/radio"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="datos-sensibles"
+    app:maskingType="cifrado" />
 ```
 
 ### 1) Enmascarar un valor (sin UI)
@@ -163,31 +184,62 @@ dependencies {
 ```java
 import co.com.amovil.masking.MaskingEngine;
 import co.com.amovil.masking.MaskingRequest;
-import co.com.amovil.masking.MaskingResult;
 import co.com.amovil.masking.MaskingType;
 import co.com.amovil.masking.MaskingValueType;
 
+// Sustitución
+String nombre = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.SUSTITUCION, "Juan Perez").build()
+).getMasked();
+// → "Sofia Martinez"
+
+// Permutación con valor fijo
+String permutado = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.PERMUTACION, "Ana")
+        .swappedWith("Luis (Bogota)").build()
+).getMasked();
+// → "Luis (Bogota)"
+
+// Cifrado Base64
+String cifrado = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.CIFRADO, "dato-sensible").build()
+).getMasked();
+// → "ZGF0by1zZW5zaWJsZQ=="
+
+// Enmascaramiento parcial de número
+String cedula = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.ENMASCARAMIENTO_PARCIAL, "1023456789")
+        .visibleChars(4).maskChar("*").build()
+).getMasked();
+// → "******6789"
+
+// Enmascaramiento parcial de email
+String email = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.ENMASCARAMIENTO_PARCIAL, "usuario@gmail.com")
+        .valueType(MaskingValueType.EMAIL).maskChar("*").build()
+).getMasked();
+// → "*******@gmail.com"
+
+// Envejecimiento de fechas
+String fecha = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.ENVEJECIMIENTO_FECHAS, "1990-05-12")
+        .offsetDays(-180).build()
+).getMasked();
+// → "1989-11-13"
+
 // Tokenización
-MaskingRequest request = MaskingRequest.builder(MaskingType.TOKENIZACION, "4111123456789012")
-    .tokenPrefix("TKN")
-    .build();
-String masked = MaskingEngine.mask(request).getMasked();
-// TKN-A1B2-C3D4 (valor determinístico basado en hash)
+String token = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.TOKENIZACION, "4111123456789012")
+        .tokenPrefix("TKN").build()
+).getMasked();
+// → "TKN-A1B2-C3D4" (determinístico)
 
-// Sustitución con sufijo de empresa
-MaskingRequest companyRequest = MaskingRequest.builder(MaskingType.SUSTITUCION, "Acme")
-    .suffix("S.A.S.")
-    .build();
-String maskedCompany = MaskingEngine.mask(companyRequest).getMasked();
-// Laura Martinez S.A.S.
-
-// Email con enmascaramiento parcial
-MaskingRequest emailRequest = MaskingRequest.builder(MaskingType.ENMASCARAMIENTO_PARCIAL, "usuario@gmail.com")
-    .valueType(MaskingValueType.EMAIL)
-    .maskChar("*")
-    .build();
-String maskedEmail = MaskingEngine.mask(emailRequest).getMasked();
-// *******@gmail.com
+// Datos sintéticos con sufijo de empresa
+String empresa = MaskingEngine.mask(
+    MaskingRequest.builder(MaskingType.DATOS_SINTETICOS, "Acme Corp")
+        .suffix("S.A.S.").build()
+).getMasked();
+// → "Carlos Diaz S.A.S."
 ```
 
 ### 2) TextView y componentes derivados
@@ -214,7 +266,6 @@ MaskingEditTextController.attach(editText, MaskingType.ENMASCARAMIENTO_PARCIAL)
     .mode(MaskingEditTextController.Mode.ON_FOCUS_LOST)
     .build();
 
-// Recuperar el valor original
 String original = MaskingEditTextController.getOriginalText(editText);
 ```
 
@@ -242,25 +293,13 @@ MaskingArrayAdapter adapter = MaskingArrayAdapter.fromStrings(
 listView.setAdapter(adapter);
 ```
 
-## Tipos de enmascaramiento
-
-| Tipo (enum) | Slug XML | Descripción |
-|-------------|---------|-------------|
-| `SUSTITUCION` | `sustitucion` | Reemplaza con nombre sintético colombiano determinístico |
-| `PERMUTACION` | `permutacion` | Intercambia por otro nombre o valor explícito (`swappedWith`) |
-| `CIFRADO` | `cifrado` | Codifica en Base64 |
-| `ENMASCARAMIENTO_PARCIAL` | `enmascaramiento-parcial` | Enmascara dejando N caracteres visibles; modo especial para email |
-| `ENVEJECIMIENTO_FECHAS` | `envejecimiento-fechas` | Desplaza una fecha en días (`offsetDays`) |
-| `TOKENIZACION` | `tokenizacion` | Genera token con prefijo y hash hexadecimal |
-| `DATOS_SINTETICOS` | `datos-sinteticos` | Genera nombre sintético con semilla diferente a sustitución |
-
-### Reglas importantes
+## Reglas importantes
 
 - `suffix` aplica en `SUSTITUCION`, `PERMUTACION` y `DATOS_SINTETICOS`.
 - En `PERMUTACION`, si se envía `swappedWith`, el sufijo se ignora.
 - `valueType` solo aplica a `ENMASCARAMIENTO_PARCIAL`.
-- Todos los enmascaramientos son **determinísticos**: el mismo input siempre produce el mismo output.
 - Si un email tiene formato inválido, el resultado es `****@dominio-ficticio.test`.
+- Todos los enmascaramientos son **determinísticos**: el mismo input siempre produce el mismo output.
 
 ## Tests
 

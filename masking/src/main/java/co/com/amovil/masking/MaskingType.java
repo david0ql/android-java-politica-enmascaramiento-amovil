@@ -33,4 +33,17 @@ public enum MaskingType {
     }
     return null;
   }
+
+  public static MaskingType fromAttrValue(int value) {
+    switch (value) {
+      case 0: return SUSTITUCION;
+      case 1: return PERMUTACION;
+      case 2: return CIFRADO;
+      case 3: return ENMASCARAMIENTO_PARCIAL;
+      case 4: return ENVEJECIMIENTO_FECHAS;
+      case 5: return TOKENIZACION;
+      case 6: return DATOS_SINTETICOS;
+      default: return null;
+    }
+  }
 }

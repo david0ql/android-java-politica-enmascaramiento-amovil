@@ -1,14 +1,28 @@
 <resources>
-  <attr name="maskingType" format="string" />
+  <attr name="maskingType">
+    <enum name="sustitucion" value="0" />
+    <enum name="permutacion" value="1" />
+    <enum name="cifrado" value="2" />
+    <enum name="enmascaramiento_parcial" value="3" />
+    <enum name="envejecimiento_fechas" value="4" />
+    <enum name="tokenizacion" value="5" />
+    <enum name="datos_sinteticos" value="6" />
+  </attr>
   <attr name="visibleChars" format="integer" />
   <attr name="maskChar" format="string" />
-  <attr name="valueType" format="string" />
+  <attr name="valueType">
+    <enum name="text" value="0" />
+    <enum name="email" value="1" />
+  </attr>
   <attr name="suffix" format="string" />
   <attr name="offsetDays" format="integer" />
   <attr name="tokenPrefix" format="string" />
   <attr name="swappedWith" format="string" />
   <attr name="algorithm" format="string" />
-  <attr name="maskingMode" format="string" />
+  <attr name="maskingMode">
+    <enum name="focus_lost" value="0" />
+    <enum name="text_changed" value="1" />
+  </attr>
 
   <declare-styleable name="MaskingTextView">
     <attr name="maskingType" />
