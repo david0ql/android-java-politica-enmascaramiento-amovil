@@ -30,17 +30,85 @@ Agrega la dependencia:
 
 ```gradle
 dependencies {
-  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:1.0.2'
+  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:1.0.4'
 }
 ```
 
 Versiones disponibles:
 
-| VERSION | Descripción |
-|---------|-------------|
-| `1.0.2` | Versión estable actual — `maskingType` con autocompletado en Android Studio |
-| `1.0.1` | Soporte JitPack con Gradle wrapper y maven-publish |
-| `1.0.0` | Primera versión |
+| VERSION | Branch | Descripción |
+|---------|--------|-------------|
+| `1.0.4` | `stable` | **Versión estable actual** — inicialización global con `MaskingConfig` |
+| `1.0.3` | `main` | Beta — eye toggle en todos los componentes |
+| `1.0.2` | — | `maskingType` con autocompletado en Android Studio |
+| `1.0.1` | — | Soporte JitPack con Gradle wrapper y maven-publish |
+| `1.0.0` | — | Primera versión |
+
+## Inicialización obligatoria
+
+La librería **debe** inicializarse antes de cualquier uso. Si se omite, la app lanza `IllegalStateException` al primer componente o llamada a `MaskingEngine.mask()`.
+
+### 1. Crea tu clase Application
+
+```java
+import android.app.Application;
+import co.com.amovil.masking.MaskingConfig;
+
+public class MyApp extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        MaskingConfig.init(this, true);
+        // false → devuelve originales sin enmascarar (útil en debug/QA)
+    }
+}
+```
+
+Si ya tienes una clase `Application` propia (por ejemplo con `UncaughtExceptionHandler`):
+
+```java
+public class ApplicationContext extends Application
+        implements Thread.UncaughtExceptionHandler {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        MaskingConfig.init(this, !BuildConfig.DEBUG); // solo en release
+        Thread.setDefaultUncaughtExceptionHandler(this);
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        // manejo de errores globales
+    }
+}
+```
+
+### 2. Registra la clase en AndroidManifest.xml
+
+```xml
+<application
+    android:name=".ApplicationContext"
+    android:icon="@mipmap/ic_launcher"
+    ...>
+```
+
+### Comportamiento según configuración
+
+| `MaskingConfig.init(ctx, ...)` | Resultado de `MaskingEngine.mask()` |
+|-------------------------------|--------------------------------------|
+| `true` | Aplica el enmascaramiento normalmente |
+| `false` | Devuelve el valor original sin cambios |
+| No llamado | `IllegalStateException` — la app falla |
+
+### Verificar estado (opcional)
+
+```java
+if (MaskingConfig.isInitialized()) {
+    // seguro para usar
+}
+```
 
 ## Instalación local
 
