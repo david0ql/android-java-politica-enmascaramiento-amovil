@@ -35,6 +35,10 @@ public final class MaskingEngine {
     if (request == null) {
       throw new IllegalArgumentException("Masking request is required");
     }
+    MaskingConfig config = MaskingConfig.require();
+    if (!config.isEnabled()) {
+      return new MaskingResult(request.getOriginal());
+    }
     MaskingStrategy strategy = STRATEGIES.get(request.getType());
     if (strategy == null) {
       throw new IllegalArgumentException("Unsupported masking type: " + request.getType());

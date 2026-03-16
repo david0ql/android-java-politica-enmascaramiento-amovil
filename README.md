@@ -55,6 +55,73 @@ dependencies {
 }
 ```
 
+## Inicialización obligatoria
+
+La librería **debe** ser inicializada una sola vez en tu clase `Application`. Si cualquier componente o `MaskingEngine.mask()` se ejecuta antes de llamar a `init()`, la app lanzará un `IllegalStateException` con instrucciones claras.
+
+### 1. Crea tu clase Application
+
+```java
+import android.app.Application;
+import co.com.amovil.masking.MaskingConfig;
+
+public class MyApp extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        MaskingConfig.init(this, true);
+        // false → desactiva el enmascaramiento y devuelve los valores originales
+        // útil para ambientes de desarrollo o debug
+    }
+}
+```
+
+Si ya tienes una clase que extiende `Application` (por ejemplo con `UncaughtExceptionHandler`):
+
+```java
+public class ApplicationContext extends Application
+        implements Thread.UncaughtExceptionHandler {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        MaskingConfig.init(this, !BuildConfig.DEBUG); // enmascarar solo en release
+        Thread.setDefaultUncaughtExceptionHandler(this);
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        // manejo de errores globales
+    }
+}
+```
+
+### 2. Registra la clase en AndroidManifest.xml
+
+```xml
+<application
+    android:name=".ApplicationContext"
+    android:icon="@mipmap/ic_launcher"
+    ...>
+```
+
+### Comportamiento por configuración
+
+| `MaskingConfig.init(ctx, ...)` | Resultado de `MaskingEngine.mask()` |
+|-------------------------------|--------------------------------------|
+| `true` | Aplica el enmascaramiento normalmente |
+| `false` | Devuelve el valor original sin cambios |
+| No llamado | `IllegalStateException` — la app falla |
+
+### Verificar estado (opcional)
+
+```java
+if (MaskingConfig.isInitialized()) {
+    // seguro para usar
+}
+```
+
 ## Tipos de enmascaramiento
 
 Los 7 tipos disponibles, con su valor para XML (`app:maskingType`) y su constante Java (`MaskingType`):
