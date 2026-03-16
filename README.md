@@ -30,7 +30,7 @@ Agrega la dependencia:
 
 ```gradle
 dependencies {
-  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:1.0.2'
+  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:1.0.4'
 }
 ```
 
@@ -38,7 +38,8 @@ Versiones disponibles:
 
 | VERSION | Descripción |
 |---------|-------------|
-| `1.0.2` | Versión estable actual — `maskingType` con autocompletado en Android Studio |
+| `1.0.4` | **Versión estable actual** — inicialización global obligatoria con `MaskingConfig` |
+| `1.0.2` | `maskingType` con autocompletado en Android Studio |
 | `1.0.1` | Soporte JitPack con Gradle wrapper y maven-publish |
 | `1.0.0` | Primera versión |
 
