@@ -24,6 +24,8 @@
     <enum name="text_changed" value="1" />
   </attr>
 
+  <attr name="maskingToggle" format="boolean" />
+
   <declare-styleable name="MaskingTextView">
     <attr name="maskingType" />
     <attr name="visibleChars" />
@@ -34,6 +36,7 @@
     <attr name="tokenPrefix" />
     <attr name="swappedWith" />
     <attr name="algorithm" />
+    <attr name="maskingToggle" />
   </declare-styleable>
 
   <declare-styleable name="MaskingEditText">
@@ -45,5 +48,6 @@
     <attr name="offsetDays" />
     <attr name="tokenPrefix" />
     <attr name="maskingMode" />
+    <attr name="maskingToggle" />
   </declare-styleable>
 </resources>

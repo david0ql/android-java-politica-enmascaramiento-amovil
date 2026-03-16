@@ -89,5 +89,12 @@ public class MaskingCheckBox extends AppCompatCheckBox {
 
   private void init(AttributeSet attrs) {
     config.loadFromAttrs(getContext(), attrs);
+    if (config.getMaskingType() != null && config.isToggleEnabled()) {
+      MaskingToggleHelper.install(this, text -> {
+        isApplying = true;
+        setText(text);
+        isApplying = false;
+      });
+    }
   }
 }

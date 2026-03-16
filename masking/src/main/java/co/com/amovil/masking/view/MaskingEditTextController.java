@@ -28,6 +28,7 @@ public final class MaskingEditTextController {
   private final String tokenPrefix;
   private final Mode mode;
   private boolean isApplying;
+  private boolean enabled = true;
   private View.OnFocusChangeListener previousFocusListener;
 
   private MaskingEditTextController(Builder builder) {
@@ -74,8 +75,12 @@ public final class MaskingEditTextController {
     });
   }
 
+  void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+
   private void applyMasking() {
-    if (isApplying) {
+    if (isApplying || !enabled) {
       return;
     }
     String original = editText.getText() != null ? editText.getText().toString() : "";

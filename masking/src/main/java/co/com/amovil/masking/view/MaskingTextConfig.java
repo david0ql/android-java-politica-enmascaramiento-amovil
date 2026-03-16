@@ -21,6 +21,7 @@ final class MaskingTextConfig {
   private String tokenPrefix;
   private String swappedWith;
   private String algorithm;
+  private boolean showToggle = true;
 
   void loadFromAttrs(Context context, AttributeSet attrs) {
     if (attrs == null || context == null) {
@@ -47,6 +48,7 @@ final class MaskingTextConfig {
       tokenPrefix = array.getString(R.styleable.MaskingTextView_tokenPrefix);
       swappedWith = array.getString(R.styleable.MaskingTextView_swappedWith);
       algorithm = array.getString(R.styleable.MaskingTextView_algorithm);
+      showToggle = array.getBoolean(R.styleable.MaskingTextView_maskingToggle, true);
     } finally {
       array.recycle();
     }
@@ -87,6 +89,10 @@ final class MaskingTextConfig {
 
   MaskingType getMaskingType() {
     return maskingType;
+  }
+
+  boolean isToggleEnabled() {
+    return showToggle;
   }
 
   void setMaskingType(MaskingType maskingType) {

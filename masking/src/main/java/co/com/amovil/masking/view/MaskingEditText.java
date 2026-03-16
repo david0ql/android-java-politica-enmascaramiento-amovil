@@ -79,6 +79,15 @@ public class MaskingEditText extends AppCompatEditText {
     } finally {
       array.recycle();
     }
+    if (config.getMaskingType() != null && config.isToggleEnabled()) {
+      MaskingToggleHelper.install(this, text -> {
+        if (controller != null) controller.setEnabled(false);
+        isApplying = true;
+        setText(text);
+        isApplying = false;
+        if (controller != null) controller.setEnabled(true);
+      });
+    }
   }
 
   public MaskingEditTextController getController() {
