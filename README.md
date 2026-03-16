@@ -1,31 +1,16 @@
 # android-java-politica-enmascaramiento-amovil
 
-Libreria Android (Java) para aplicar la politica de enmascaramiento con las 7 tecnicas: Sustitucion, Permutacion, Cifrado, Enmascaramiento Parcial, Envejecimiento de Fechas, Tokenizacion y Datos Sinteticos.
+Librería Android (Java) para aplicar la política de enmascaramiento con 7 técnicas: Sustitución, Permutación, Cifrado, Enmascaramiento Parcial, Envejecimiento de Fechas, Tokenización y Datos Sintéticos.
 
 ## Package
 
-Se usa `co.com.amovil.masking` como package base. Es corto, consistente y deja espacio para futuras librerias dentro de `co.com.amovil`.
+`co.com.amovil.masking`
 
-## Instalacion (local)
+## Instalación desde GitHub (JitPack)
 
-Incluye el modulo `masking` en tu proyecto Android:
-
-```gradle
-// settings.gradle
-include(":masking")
-```
+Agrega JitPack como repositorio en `settings.gradle` (Gradle 7+):
 
 ```gradle
-// build.gradle del app
-implementation project(":masking")
-```
-
-## Instalacion desde GitHub (JitPack)
-
-1) Agrega JitPack como repositorio:
-
-```gradle
-// settings.gradle (Gradle 7+)
 dependencyResolutionManagement {
   repositories {
     google()
@@ -35,24 +20,79 @@ dependencyResolutionManagement {
 }
 ```
 
-2) Agrega la dependencia con el tag o commit que quieras usar:
+O en Kotlin DSL (`settings.gradle.kts`):
+
+```kotlin
+maven { url = uri("https://jitpack.io") }
+```
+
+Agrega la dependencia:
 
 ```gradle
 dependencies {
-  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:VERSION'
+  implementation 'com.github.david0ql:android-java-politica-enmascaramiento-amovil:1.0.1'
 }
 ```
 
-Ejemplos de VERSION:
-- Un tag, por ejemplo `1.0.0`
-- Un commit hash, por ejemplo `a1b2c3d`
-- `main-SNAPSHOT` para la rama principal
+Versiones disponibles:
 
-## Uso basico
+| VERSION | Descripción |
+|---------|-------------|
+| `1.0.1` | Versión estable actual |
+| `1.0.0` | Primera versión |
+| `main-SNAPSHOT` | Rama principal (puede ser inestable) |
 
-### 0) Componentes XML (atributos)
+## Instalación local
+
+Incluye el módulo `masking` en tu proyecto Android:
+
+```gradle
+// settings.gradle
+include(':masking')
+project(':masking').projectDir = new File('ruta/al/modulo/masking')
+```
+
+```gradle
+// app/build.gradle
+dependencies {
+  implementation project(':masking')
+}
+```
+
+## Componentes XML disponibles
+
+| Componente | Extiende |
+|-----------|---------|
+| `MaskingTextView` | AppCompatTextView |
+| `MaskingButton` | AppCompatButton |
+| `MaskingCheckBox` | AppCompatCheckBox |
+| `MaskingRadioButton` | AppCompatRadioButton |
+| `MaskingToggleButton` | ToggleButton |
+| `MaskingCheckedTextView` | AppCompatCheckedTextView |
+| `MaskingAutoCompleteTextView` | AppCompatAutoCompleteTextView |
+| `MaskingMultiAutoCompleteTextView` | AppCompatMultiAutoCompleteTextView |
+| `MaskingEditText` | AppCompatEditText |
+
+## Atributos XML
+
+| Atributo | Tipo | Aplica a | Descripción |
+|---------|------|----------|-------------|
+| `app:maskingType` | `string` | Todos | Tipo de enmascaramiento |
+| `app:visibleChars` | `integer` | Enmascaramiento parcial | Caracteres visibles al final |
+| `app:maskChar` | `string` | Enmascaramiento parcial | Carácter de máscara |
+| `app:valueType` | `string` | Enmascaramiento parcial | `text` o `email` |
+| `app:suffix` | `string` | Sustitución, Permutación, Datos Sintéticos | Sufijo de empresa (ej. `S.A.S.`) |
+| `app:swappedWith` | `string` | Permutación | Valor alternativo directo |
+| `app:offsetDays` | `integer` | Envejecimiento de fechas | Desplazamiento en días |
+| `app:tokenPrefix` | `string` | Tokenización | Prefijo del token |
+| `app:maskingMode` | `string` | `MaskingEditText` | `focus_lost` o `text_changed` |
+
+## Uso básico
+
+### 0) Componentes XML
 
 ```xml
+<!-- Sustitución con sufijo -->
 <co.com.amovil.masking.view.MaskingTextView
     android:id="@+id/nombre"
     android:layout_width="wrap_content"
@@ -61,6 +101,7 @@ Ejemplos de VERSION:
     app:maskingType="sustitucion"
     app:suffix="S.A.S." />
 
+<!-- Enmascaramiento parcial de número -->
 <co.com.amovil.masking.view.MaskingTextView
     android:id="@+id/cedula"
     android:layout_width="wrap_content"
@@ -70,6 +111,7 @@ Ejemplos de VERSION:
     app:visibleChars="4"
     app:maskChar="*" />
 
+<!-- Enmascaramiento parcial de email -->
 <co.com.amovil.masking.view.MaskingTextView
     android:id="@+id/correo"
     android:layout_width="wrap_content"
@@ -79,6 +121,7 @@ Ejemplos de VERSION:
     app:valueType="email"
     app:maskChar="*" />
 
+<!-- Tokenización en Button -->
 <co.com.amovil.masking.view.MaskingButton
     android:id="@+id/boton"
     android:layout_width="wrap_content"
@@ -87,6 +130,7 @@ Ejemplos de VERSION:
     app:maskingType="tokenizacion"
     app:tokenPrefix="TKN" />
 
+<!-- Datos sintéticos en CheckBox -->
 <co.com.amovil.masking.view.MaskingCheckBox
     android:id="@+id/checkbox"
     android:layout_width="wrap_content"
@@ -94,6 +138,7 @@ Ejemplos de VERSION:
     android:text="Maria Lopez"
     app:maskingType="datos-sinteticos" />
 
+<!-- Permutación en AutoComplete -->
 <co.com.amovil.masking.view.MaskingAutoCompleteTextView
     android:id="@+id/autocomplete"
     android:layout_width="match_parent"
@@ -102,6 +147,7 @@ Ejemplos de VERSION:
     app:maskingType="permutacion"
     app:swappedWith="Luis (Bogota)" />
 
+<!-- Envejecimiento de fechas en EditText -->
 <co.com.amovil.masking.view.MaskingEditText
     android:id="@+id/fecha"
     android:layout_width="match_parent"
@@ -112,81 +158,43 @@ Ejemplos de VERSION:
     app:maskingMode="focus_lost" />
 ```
 
-Componentes XML disponibles:
-
-- MaskingTextView
-- MaskingButton
-- MaskingCheckBox
-- MaskingRadioButton
-- MaskingToggleButton
-- MaskingCheckedTextView
-- MaskingAutoCompleteTextView
-- MaskingMultiAutoCompleteTextView
-- MaskingEditText
-
-Atributos XML relevantes:
-
-| Atributo | Tipo | Aplica a | Descripción |
-|---------|------|----------|-------------|
-| `app:maskingType` | `string` | Todos los componentes | Tipo de enmascaramiento |
-| `app:visibleChars` | `integer` | Enmascaramiento parcial | Cantidad de caracteres visibles al final para texto |
-| `app:maskChar` | `string` | Enmascaramiento parcial | Carácter usado para enmascarar |
-| `app:valueType` | `string` | Enmascaramiento parcial | Usa `text` o `email` |
-| `app:suffix` | `string` | Sustitucion, Permutacion, Datos Sinteticos | Sufijo opcional para empresa, por ejemplo `S.A.` o `S.A.S.` |
-| `app:swappedWith` | `string` | Permutacion | Valor alternativo a usar directamente |
-| `app:offsetDays` | `integer` | Envejecimiento de fechas | Desplazamiento en días |
-| `app:tokenPrefix` | `string` | Tokenizacion | Prefijo del token |
-| `app:maskingMode` | `string` | `MaskingEditText` | Usa `focus_lost` o `text_changed` |
-
 ### 1) Enmascarar un valor (sin UI)
 
 ```java
+import co.com.amovil.masking.MaskingEngine;
+import co.com.amovil.masking.MaskingRequest;
+import co.com.amovil.masking.MaskingResult;
+import co.com.amovil.masking.MaskingType;
+import co.com.amovil.masking.MaskingValueType;
+
+// Tokenización
 MaskingRequest request = MaskingRequest.builder(MaskingType.TOKENIZACION, "4111123456789012")
     .tokenPrefix("TKN")
     .build();
+String masked = MaskingEngine.mask(request).getMasked();
+// TKN-A1B2-C3D4 (valor determinístico basado en hash)
 
-MaskingResult result = MaskingEngine.mask(request);
-String masked = result.getMasked();
-```
-
-Para empresas con sufijo:
-
-```java
+// Sustitución con sufijo de empresa
 MaskingRequest companyRequest = MaskingRequest.builder(MaskingType.SUSTITUCION, "Acme")
     .suffix("S.A.S.")
     .build();
-
 String maskedCompany = MaskingEngine.mask(companyRequest).getMasked();
 // Laura Martinez S.A.S.
-```
 
-Regla:
-
-- `suffix` aplica en `SUSTITUCION`, `PERMUTACION` y `DATOS_SINTETICOS`.
-- En `PERMUTACION`, el sufijo solo se usa cuando no envías `swappedWith`.
-
-Para correo con enmascaramiento parcial:
-
-```java
-MaskingRequest emailRequest = MaskingRequest.builder(
-        MaskingType.ENMASCARAMIENTO_PARCIAL,
-        "usuario@gmail.com")
+// Email con enmascaramiento parcial
+MaskingRequest emailRequest = MaskingRequest.builder(MaskingType.ENMASCARAMIENTO_PARCIAL, "usuario@gmail.com")
     .valueType(MaskingValueType.EMAIL)
     .maskChar("*")
     .build();
-
 String maskedEmail = MaskingEngine.mask(emailRequest).getMasked();
 // *******@gmail.com
 ```
 
-Regla:
-
-- Si `valueType` es `MaskingValueType.EMAIL`, la librería enmascara la parte antes de `@` y conserva el dominio.
-- Si el correo no tiene un formato válido, el resultado será `****@dominio-ficticio.test`.
-
-### 2) TextView y componentes derivados (Button, Chip, etc.)
+### 2) TextView y componentes derivados
 
 ```java
+import co.com.amovil.masking.view.MaskingViewApplier;
+
 TextView textView = findViewById(R.id.nombre);
 MaskingRequest request = MaskingRequest.builder(MaskingType.SUSTITUCION, "Juan Perez")
     .suffix("S.A.")
@@ -197,6 +205,8 @@ MaskingViewApplier.apply(textView, request);
 ### 3) EditText (enmascarar al perder foco)
 
 ```java
+import co.com.amovil.masking.view.MaskingEditTextController;
+
 EditText editText = findViewById(R.id.cedula);
 MaskingEditTextController.attach(editText, MaskingType.ENMASCARAMIENTO_PARCIAL)
     .visibleChars(4)
@@ -204,25 +214,15 @@ MaskingEditTextController.attach(editText, MaskingType.ENMASCARAMIENTO_PARCIAL)
     .mode(MaskingEditTextController.Mode.ON_FOCUS_LOST)
     .build();
 
+// Recuperar el valor original
 String original = MaskingEditTextController.getOriginalText(editText);
-```
-
-Si el valor es correo, usa `.valueType(MaskingValueType.EMAIL)` en el builder del controller o `app:valueType="email"` en XML. Cuando el correo no trae dominio válido, la librería retorna `****@dominio-ficticio.test`.
-
-Para nombres de empresa puedes usar `.suffix("S.A.")` o `.suffix("S.A.S.")` en el builder, o `app:suffix="S.A.S."` en XML.
-
-Si necesitas el mismo comportamiento en `MaskingEditTextController`, también puedes hacer:
-
-```java
-MaskingEditTextController.attach(editText, MaskingType.SUSTITUCION)
-    .suffix("S.A.S.")
-    .mode(MaskingEditTextController.Mode.ON_FOCUS_LOST)
-    .build();
 ```
 
 ### 4) Spinner
 
 ```java
+import co.com.amovil.masking.view.MaskingSpinnerAdapter;
+
 Spinner spinner = findViewById(R.id.spinner);
 List<String> valores = Arrays.asList("4111123456789012", "5555444433332222");
 MaskingSpinnerAdapter adapter = MaskingSpinnerAdapter.fromStrings(
@@ -230,9 +230,11 @@ MaskingSpinnerAdapter adapter = MaskingSpinnerAdapter.fromStrings(
 spinner.setAdapter(adapter);
 ```
 
-### 5) ListView / Listas simples
+### 5) ListView
 
 ```java
+import co.com.amovil.masking.view.MaskingArrayAdapter;
+
 ListView listView = findViewById(R.id.lista);
 List<String> valores = Arrays.asList("Ana", "Maria", "Juan");
 MaskingArrayAdapter adapter = MaskingArrayAdapter.fromStrings(
@@ -242,19 +244,23 @@ listView.setAdapter(adapter);
 
 ## Tipos de enmascaramiento
 
-1. Sustitucion
-2. Permutacion
-3. Cifrado (Base64)
-4. Enmascaramiento Parcial
-5. Envejecimiento de Fechas
-6. Tokenizacion
-7. Datos Sinteticos
+| Tipo (enum) | Slug XML | Descripción |
+|-------------|---------|-------------|
+| `SUSTITUCION` | `sustitucion` | Reemplaza con nombre sintético colombiano determinístico |
+| `PERMUTACION` | `permutacion` | Intercambia por otro nombre o valor explícito (`swappedWith`) |
+| `CIFRADO` | `cifrado` | Codifica en Base64 |
+| `ENMASCARAMIENTO_PARCIAL` | `enmascaramiento-parcial` | Enmascara dejando N caracteres visibles; modo especial para email |
+| `ENVEJECIMIENTO_FECHAS` | `envejecimiento-fechas` | Desplaza una fecha en días (`offsetDays`) |
+| `TOKENIZACION` | `tokenizacion` | Genera token con prefijo y hash hexadecimal |
+| `DATOS_SINTETICOS` | `datos-sinteticos` | Genera nombre sintético con semilla diferente a sustitución |
 
-Reglas importantes:
+### Reglas importantes
 
-- `suffix` está disponible en `SUSTITUCION`, `PERMUTACION` y `DATOS_SINTETICOS`.
+- `suffix` aplica en `SUSTITUCION`, `PERMUTACION` y `DATOS_SINTETICOS`.
+- En `PERMUTACION`, si se envía `swappedWith`, el sufijo se ignora.
 - `valueType` solo aplica a `ENMASCARAMIENTO_PARCIAL`.
-- En `PERMUTACION`, si envías `swappedWith`, ese valor se usa tal cual y no se modifica con `suffix`.
+- Todos los enmascaramientos son **determinísticos**: el mismo input siempre produce el mismo output.
+- Si un email tiene formato inválido, el resultado es `****@dominio-ficticio.test`.
 
 ## Tests
 
